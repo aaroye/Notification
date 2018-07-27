@@ -1,0 +1,26 @@
+1.先創建一個class叫NotificationReciever，並複製git另一個檔案的程式碼過去
+2.打開AndroidManifest.xml，在兩個 <application></application> 之間塞入此段程式碼
+        <receiver android:name=".NotificationReciever">
+            <intent-filter>
+                <action android:name="noti_test"/>
+            </intent-filter>
+        </receiver>
+3.啟動程式的方法
+    //date 格式: yyyy/m/d 例: 2018/7/3
+    //time 格式: h:s 例: 6:3 , 17:20
+    private void SendNotification(String date, String time , String title, String message) {
+        Calendar calendar = Calendar.getInstance();
+        Intent intent = new Intent(getApplicationContext(), NotificationReciever.class);
+        intent.putExtra("msg", "MyNotification");
+        intent.putExtra("title", title);
+        intent.putExtra("message", message);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        String temp[] = null;
+        String temp2[] = null;
+        temp = date.split("/");
+        temp2 = time.split(":");
+        calendar.set(Integer.parseInt(temp[0]),Integer.parseInt(temp[1]) - 1,Integer.parseInt(temp[2]),Integer.parseInt(temp2[0]),Integer.parseInt(temp2[1]),0);
+
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+    }
